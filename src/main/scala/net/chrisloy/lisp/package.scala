@@ -4,12 +4,16 @@ package object lisp {
 
   sealed trait Expression { def value: Any }
 
-  case class LLiteral(value: String) extends Expression
   case class LString(value: String) extends Expression
   case class LLong(value: Long) extends Expression
   case class LDouble(value: Double) extends Expression
+  case class LBoolean(value: Boolean) extends Expression
 
-  case class LList(members: List[Expression]) extends Expression {
+  case class LLiteral(atom: String)(implicit scope: Scope) extends Expression {
+    def value = scope(atom)
+  }
+
+  case class LList(members: List[Expression])(implicit scope: Scope) extends Expression {
     lazy val value = members match {
       case LLiteral(fn) :: args => defs(fn)(args)
       case _ => throw new Exception(s"Could not evaluate: $members")

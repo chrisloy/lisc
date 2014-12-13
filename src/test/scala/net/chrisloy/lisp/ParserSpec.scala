@@ -7,6 +7,8 @@ import org.scalacheck.Prop._
 
 class ParserSpec extends FlatSpec with MustMatchers with Checkers {
 
+  implicit val scope = new Scope
+
   val parse = new Parser
 
   it should "parse integers" in {
@@ -31,5 +33,10 @@ class ParserSpec extends FlatSpec with MustMatchers with Checkers {
 
   it should "add with arbitrary nesting" in {
     check((x: Long, y: Long, z: Long) => parse(s"(+ $x (+ $y (+ $z)))").value == x + y + z)
+  }
+
+  it should "handle booleans" in {
+    parse("true").value mustBe true
+    parse("false").value mustBe false
   }
 }

@@ -2,29 +2,32 @@ package net.chrisloy.lisp
 
 import scala.util.parsing.combinator._
 
-class Parser {
+class Parser(implicit scope: Scope) {
 
   private def stripQuotes(x: String) = x.substring(1, x.length - 1)
 
   val parser = new JavaTokenParsers {
 
-    def list: Parser[LList] =
-      "(" ~> rep(exp) <~ ")" ^^ LList
+    private def list: Parser[LList] =
+      "(" ~> rep(exp) <~ ")" ^^ (x => LList(x))
 
-    def string: Parser[LString] =
+    private def string: Parser[LString] =
       stringLiteral ^^ stripQuotes ^^ LString
 
-    def literal: Parser[LLiteral] =
-      """[^() ]+""".r ^^ LLiteral
+    private def literal: Parser[LLiteral] =
+      """[^() ]+""".r ^^ (x => LLiteral(x))
 
-    def long: Parser[LLong] =
+    private def long: Parser[LLong] =
       wholeNumber ^^ (_.toLong) ^^ LLong
 
-    def double: Parser[LDouble] =
+    private def double: Parser[LDouble] =
       ("""\-?\d+\.\d*([eE]\-?\d+)?""".r | """\-?\d+[eE]\-?\d+""".r) ^^ (_.toDouble) ^^ LDouble
 
-    def exp: Parser[Expression] =
-      double | long | string | list | literal
+    private def boolean: Parser[LBoolean] =
+      "true"  ^^^ LBoolean(value = true) | "false" ^^^ LBoolean(value = false)
+
+    val exp: Parser[Expression] =
+      boolean | double | long | string | list | literal
   }
 
   def apply(input: String): Expression = parser.parseAll(parser.exp, input).get
