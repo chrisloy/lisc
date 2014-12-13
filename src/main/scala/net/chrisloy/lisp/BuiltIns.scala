@@ -2,14 +2,14 @@ package net.chrisloy.lisp
 
 object BuiltIns {
 
-  def apply(atom: String): Option[Eval] = atom match {
+  def apply(atom: String): Option[Eval] = functions.lift(atom)
 
-    case "+" => Some(_ map (_.value) reduce addWithType)
-
-    case _ => None
+  private val functions: PartialFunction[String, Eval] = {
+    case "+" => _ map (_.value) reduce addWithType
   }
 
-  val addWithType: (Any, Any) => Any = {
+  // TODO
+  private lazy val addWithType: (Any, Any) => Any = {
     case (x: Long, y: Long) => x + y
     case (x: Long, y: Double) => x + y
     case (x: Double, y: Long) => x + y

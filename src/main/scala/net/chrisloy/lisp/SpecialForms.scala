@@ -2,12 +2,11 @@ package net.chrisloy.lisp
 
 object SpecialForms {
 
-  def apply(function: String): Option[Eval] = function match {
+  def apply(function: String): Option[Eval] = forms.lift(function)
 
-    case "if" => Some(
-      args => if (args(0).toBoolean) args(1).value else args(2).value
-    )
-
-    case _ => None
+  private val forms: PartialFunction[String, Eval] = {
+    case "if" => {
+      case List(test, then, other) => if (test.toBoolean) then.value else other.value
+    }
   }
 }
