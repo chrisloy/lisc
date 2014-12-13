@@ -1,0 +1,35 @@
+package net.chrisloy.lisp
+
+import org.scalatest.prop.Checkers
+import org.scalatest.{MustMatchers, FlatSpec}
+import org.scalacheck.Arbitrary._
+import org.scalacheck.Prop._
+
+class ParserSpec extends FlatSpec with MustMatchers with Checkers {
+
+  val parse = new Parser
+
+  it should "parse integers" in {
+    check((x: Long) => parse(x.toString) == LLong(x))
+  }
+
+  it should "parse doubles" in {
+    check((x: Double) => parse(x.toString) == LDouble(x))
+  }
+
+  it should "parse lists" in {
+    parse("""("a" b (1 2))""") mustBe LList(List(LString("a"), LLiteral("b"), LList(List(LLong(1), LLong(2)))))
+  }
+
+  it should "add two integers" in {
+    check((x: Long, y: Long) => parse(s"(+ $x $y)").value == x + y)
+  }
+
+  it should "add three integers" in {
+    check((x: Long, y: Long, z: Long) => parse(s"(+ $x $y $z)").value == x + y + z)
+  }
+
+  it should "add with arbitrary nesting" in {
+    check((x: Long, y: Long, z: Long) => parse(s"(+ $x (+ $y (+ $z)))").value == x + y + z)
+  }
+}
