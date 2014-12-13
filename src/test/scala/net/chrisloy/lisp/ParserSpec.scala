@@ -39,4 +39,9 @@ class ParserSpec extends FlatSpec with MustMatchers with Checkers {
     parse("true").value mustBe true
     parse("false").value mustBe false
   }
+
+  it should "handle conditionals" in {
+    parse("(if true 1 2)").value mustBe 1
+    parse("(if false 1 2)").value mustBe 2
+  }
 }

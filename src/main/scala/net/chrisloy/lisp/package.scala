@@ -2,7 +2,12 @@ package net.chrisloy
 
 package object lisp {
 
-  sealed trait Expression { def value: Any }
+  type Eval = List[Expression] => Any
+
+  sealed trait Expression {
+    def value: Any
+    def toBoolean = value.asInstanceOf[Boolean]
+  }
 
   case class LString(value: String) extends Expression
   case class LLong(value: Long) extends Expression
@@ -10,27 +15,13 @@ package object lisp {
   case class LBoolean(value: Boolean) extends Expression
 
   case class LLiteral(atom: String)(implicit scope: Scope) extends Expression {
-    def value = scope(atom)
+    def value = scope.Atoms(atom)
   }
 
   case class LList(members: List[Expression])(implicit scope: Scope) extends Expression {
     lazy val value = members match {
-      case LLiteral(fn) :: args => defs(fn)(args)
+      case LLiteral(fn) :: args => scope.Functions(fn)(args)
       case _ => throw new Exception(s"Could not evaluate: $members")
     }
   }
-
-  val addWithType: (Any, Any) => Any = {
-    case (x: Long, y: Long) => x + y
-    case (x: Long, y: Double) => x + y
-    case (x: Double, y: Long) => x + y
-    case (x: Double, y: Double) => x + y
-    case (x, y) => throw new Exception(s"Don't know how to add $x and $y")
-  }
-
-  val defs = Map[String, List[Expression] => Any](
-    "+" -> {
-      _ map (_.value) reduce addWithType
-    }
-  )
 }
