@@ -5,7 +5,7 @@ object BuiltIns {
   def apply(atom: String): Option[Eval] = functions.lift(atom)
 
   private val functions: PartialFunction[String, Eval] = {
-    case "+" => _ map (_.value) reduce addWithType
+    case "+" => implicit scope => _ map (_.value) reduce addWithType
   }
 
   // TODO
