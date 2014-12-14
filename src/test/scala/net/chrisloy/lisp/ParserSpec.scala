@@ -44,4 +44,12 @@ class ParserSpec extends FlatSpec with MustMatchers with Checkers {
     parse("(if true 1 2)").value mustBe 1
     parse("(if false 1 2)").value mustBe 2
   }
+
+  it should "parse an empty vector" in {
+    parse("[]") mustBe LVector(Nil)
+  }
+
+  it should "parse a vector of numbers" in {
+    parse("[1 2 3]").value mustBe List(1, 2, 3)
+  }
 }

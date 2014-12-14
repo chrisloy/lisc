@@ -28,4 +28,8 @@ package object lisp {
       case _ => throw new Exception(s"Could not evaluate: $members")
     }
   }
+
+  case class LVector(members: List[Expression]) extends Expression {
+    def value(implicit scope: Scope) = members.map(_.value)
+  }
 }
