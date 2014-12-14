@@ -15,5 +15,15 @@ object SpecialForms {
         case List(LLiteral(name), expr) => scope.Atoms.bind(name, expr)
       }
     }
+    case "fn" => {
+      implicit scope => {
+        case List(LVector(args), expr) => scope.Functions.newFn(args, expr)
+      }
+    }
+    case "defn" => {
+      implicit scope => {
+        case List(LLiteral(name), LVector(args), expr) => scope.Functions.bind(name, args, expr)
+      }
+    }
   }
 }

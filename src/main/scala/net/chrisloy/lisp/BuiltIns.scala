@@ -9,7 +9,7 @@ object BuiltIns {
   }
 
   // TODO
-  private lazy val addWithType: (Any, Any) => Any = {
+  private lazy val addWithType: (Any, Any) => Value = {
     case (x: Long, y: Long) => x + y
     case (x: Long, y: Double) => x + y
     case (x: Double, y: Long) => x + y

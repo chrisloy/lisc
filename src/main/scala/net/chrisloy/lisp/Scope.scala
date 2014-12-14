@@ -11,8 +11,22 @@ class Scope {
   }
 
   object Functions {
+    private val userDefined = mutable.Map.empty[String, Eval]
+
+    def bind(name: String, params: List[Expression], body: Expression)(implicit scope: Scope): Value = {
+      userDefined += name -> newFn(params, body)
+    }
+
     def apply(fn: String): Eval = {
-      SpecialForms(fn) getOrElse BuiltIns(fn).get
+      SpecialForms(fn) orElse BuiltIns(fn) getOrElse userDefined(fn)
+    }
+
+    def newFn(params: List[Expression], body: Expression)(implicit scope: Scope): Eval = {
+      implicit scope => {
+        params.size match {
+          case 0 => { case Nil => body.value }
+        }
+      }
     }
   }
 }

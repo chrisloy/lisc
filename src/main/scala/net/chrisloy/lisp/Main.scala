@@ -9,7 +9,7 @@ object Main extends App {
 
   println(
     """
-      |Welcome to LiSc!
+      |Welcome to LISc! [other names: Chrisp, Loysp]
       |This is a toy Lisp interpreter, written in Scala.
       |Type :q to leave
     """.stripMargin)
