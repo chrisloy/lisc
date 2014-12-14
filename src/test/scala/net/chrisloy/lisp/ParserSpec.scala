@@ -53,9 +53,12 @@ class ParserSpec extends FlatSpec with MustMatchers with Checkers {
     parse("[1 2 3]").value mustBe List(1, 2, 3)
   }
 
+  ignore should "handle functions returning symbols" in {
+    parse("((if true + fn) 1 2)").value mustBe 3
+  }
+
   it should "create a zero-arity function" in {
-    val fn = parse("(fn [] (+ 1 2))").value
-    fn.asInstanceOf[Eval](scope)(Nil) mustBe 3
+    parse("(fn [] (+ 1 2))").value.asInstanceOf[Eval](scope)(Nil) mustBe 3
   }
 
   it should "execute a zero-arity function" in {
@@ -65,5 +68,9 @@ class ParserSpec extends FlatSpec with MustMatchers with Checkers {
   it should "register a zero-arity function" in {
     parse("(defn a [] (+ 1 2))").value
     parse("(a)").value mustBe 3
+  }
+
+  it should "create a one-arity function" in {
+    parse("(fn [a] (+ 1 a))").value.asInstanceOf[Eval](scope)(LLong(3) :: Nil) mustBe 4
   }
 }

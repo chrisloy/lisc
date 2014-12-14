@@ -2,10 +2,10 @@ package net.chrisloy.lisp
 
 import scala.collection.mutable
 
-class Scope {
+class Scope(_atoms: Map[String, Value] = Map.empty) {
 
   object Atoms {
-    private val atoms = mutable.Map.empty[String, Any]
+    var atoms = _atoms
     def apply(atom: String): Any = atoms(atom)
     def bind(name: String, expr: Expression)(implicit scope: Scope) = atoms += name -> expr.value
   }
@@ -23,10 +23,15 @@ class Scope {
 
     def newFn(params: List[Expression], body: Expression)(implicit scope: Scope): Eval = {
       implicit scope => {
-        params.size match {
-          case 0 => { case Nil => body.value }
+        params match {
+          case Nil => { case Nil => body.value }
+          case List(LLiteral(atom)) => { case List(a) => body.value(scope.plus(atom -> a.value))}
         }
       }
     }
+  }
+
+  def plus(tup: (String, Value)*): Scope = {
+    new Scope(Atoms.atoms ++ Map(tup: _*))
   }
 }
