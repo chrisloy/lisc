@@ -5,7 +5,7 @@ _List Interpretation in Scala_
 Overview
 ---
 This is a toy LISP interpreter written in pure Scala. It is still early days and plenty of
-language features are missing, but the code is in at least runnable, with a very basic REPL.
+language features are missing, but the code is at least runnable, with a very basic REPL.
 
 Usage
 ---
