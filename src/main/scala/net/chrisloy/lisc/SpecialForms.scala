@@ -10,7 +10,7 @@ object SpecialForms {
   private def forms(implicit scope: Scope): PartialFunction[(String, List[Expression]), Value] = {
     case ("if", List(test, then, other)) => if (test.toBoolean) then.value else other.value
     case ("def", List(symbol, expr)) => scope.bind(symbol.toSymbol, expr)
-    case ("fn", List(LVector(args), expr)) => scope.newFn(args, expr)
-    case ("defn", List(symbol, LVector(args), expr)) => scope.bindFn(symbol.toSymbol, args, expr)
+    case ("fn", List(LVector(args), expr)) => scope.newFn(args.map(_.toSymbol), expr)
+    case ("defn", List(symbol, LVector(args), expr)) => scope.bindFn(symbol.toSymbol, args.map(_.toSymbol), expr)
   }
 }

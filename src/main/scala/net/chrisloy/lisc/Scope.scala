@@ -11,7 +11,7 @@ case class Scope(values: Map[Symbol, Value], functions: Map[Symbol, Eval]) {
 
   def bind(symbol: Symbol, expr: Expression) = Values += symbol -> expr.value(this)
 
-  def bindFn(symbol: Symbol, params: List[Expression], body: Expression): Value = {
+  def bindFn(symbol: Symbol, params: List[Symbol], body: Expression): Value = {
     Functions += symbol -> newFn(params, body)
   }
 
@@ -37,12 +37,9 @@ case class Scope(values: Map[Symbol, Value], functions: Map[Symbol, Eval]) {
     }
   }
 
-  def newFn(params: List[Expression], body: Expression): Eval = {
-    implicit scope => {
-      params match {
-        case Nil => { case Nil => body.value }
-        case List(sym: Symbol) => { case List(a) => body.value(scope.plus(sym -> a.value))}
-      }
+  def newFn(params: List[Symbol], body: Expression): Eval = {
+    implicit scope => { args =>
+      body.value(scope.plus(params.zip(args.map(_.value)): _*))
     }
   }
 

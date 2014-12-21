@@ -16,8 +16,10 @@ package object lisc {
     def toBoolean(implicit scope: Scope) = value.asInstanceOf[Boolean]
     def isLong(implicit scope: Scope) = value.isInstanceOf[Long]
     def toLong(implicit scope: Scope) = value.asInstanceOf[Long]
-    def isDouble(implicit scope: Scope) = value.isInstanceOf[Long]
-    def toDouble(implicit scope: Scope) = value.asInstanceOf[Double]
+    def isDouble(implicit scope: Scope) = value.isInstanceOf[Double]
+    def toDouble(implicit scope: Scope) = {
+      if (isDouble) value.asInstanceOf[Double] else toLong.toDouble
+    }
   }
 
   abstract class WithValue[T](v: T) extends Expression {
