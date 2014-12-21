@@ -2,12 +2,18 @@ package net.chrisloy
 
 package object lisc {
 
+  type Symbol = String
   type Value = Any
   type Eval = Scope => List[Expression] => Value
 
   sealed trait Expression {
     def value(implicit scope: Scope): Any
+    def toSymbol(implicit scope: Scope) = value.asInstanceOf[Symbol]
     def toBoolean(implicit scope: Scope) = value.asInstanceOf[Boolean]
+    def isLong(implicit scope: Scope) = value.isInstanceOf[Long]
+    def toLong(implicit scope: Scope) = value.asInstanceOf[Long]
+    def isDouble(implicit scope: Scope) = value.isInstanceOf[Long]
+    def toDouble(implicit scope: Scope) = value.asInstanceOf[Double]
   }
 
   abstract class WithValue[T](v: T) extends Expression {
@@ -24,11 +30,7 @@ package object lisc {
   }
 
   case class LList(members: List[Expression]) extends Expression {
-    def value(implicit scope: Scope) = members match {
-      case LLiteral(fn) :: args => scope.Functions(fn)(scope)(args)
-      case (x: LList) :: args => x.value.asInstanceOf[Eval](scope)(args)
-      case _ => throw new Exception(s"Could not evaluate: $members")
-    }
+    def value(implicit scope: Scope) = scope.eval(members)
   }
 
   case class LVector(members: List[Expression]) extends Expression {

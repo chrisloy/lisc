@@ -2,18 +2,14 @@ package net.chrisloy.lisc
 
 object BuiltIns {
 
-  def apply(atom: String): Option[Eval] = functions.lift(atom)
-
-  private val functions: PartialFunction[String, Eval] = {
-    case "+" => implicit scope => _ map (_.value) reduce addWithType
+  def apply(xs: List[Expression])(implicit scope: Scope): Option[Value] = xs match {
+    case LLiteral(x) :: args => functions.lift(x, args)
+    case _ => None
   }
 
-  // TODO
-  private lazy val addWithType: (Any, Any) => Value = {
-    case (x: Long, y: Long) => x + y
-    case (x: Long, y: Double) => x + y
-    case (x: Double, y: Long) => x + y
-    case (x: Double, y: Double) => x + y
-    case (x, y) => throw new Exception(s"Don't know how to add $x and $y")
+  private def functions(implicit scope: Scope): PartialFunction[(String, List[Expression]), Value] = {
+    case ("+", args) if args.forall(_.isLong) => args.map(_.toLong).reduce(_ + _)
+    case ("+", args) => args map (_.toDouble) reduce (_ + _)
+    case ("=", args) => args map (_.value) reduce (_ == _)
   }
 }

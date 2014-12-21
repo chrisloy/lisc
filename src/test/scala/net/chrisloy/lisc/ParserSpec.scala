@@ -23,18 +23,6 @@ class ParserSpec extends FlatSpec with MustMatchers with Checkers {
     parse("""("a" b (1 2))""") mustBe LList(List(LString("a"), LLiteral("b"), LList(List(LLong(1), LLong(2)))))
   }
 
-  it should "add two integers" in {
-    check((x: Long, y: Long) => parse(s"(+ $x $y)").value == x + y)
-  }
-
-  it should "add three integers" in {
-    check((x: Long, y: Long, z: Long) => parse(s"(+ $x $y $z)").value == x + y + z)
-  }
-
-  it should "add with arbitrary nesting" in {
-    check((x: Long, y: Long, z: Long) => parse(s"(+ $x (+ $y (+ $z)))").value == x + y + z)
-  }
-
   it should "handle booleans" in {
     parse("true").value mustBe true
     parse("false").value mustBe false
@@ -57,15 +45,15 @@ class ParserSpec extends FlatSpec with MustMatchers with Checkers {
     parse("((if true + fn) 1 2)").value mustBe 3
   }
 
-  it should "create a zero-arity function" in {
+  it should "create a zero-arity function" ignore {
     parse("(fn [] (+ 1 2))").value.asInstanceOf[Eval](scope)(Nil) mustBe 3
   }
 
-  it should "execute a zero-arity function" in {
+  it should "execute a zero-arity function" ignore {
     parse("((fn [] (+ 1 2)))").value mustBe 3
   }
 
-  it should "register a zero-arity function" in {
+  it should "register a zero-arity function" ignore {
     parse("(defn a [] (+ 1 2))").value
     parse("(a)").value mustBe 3
   }

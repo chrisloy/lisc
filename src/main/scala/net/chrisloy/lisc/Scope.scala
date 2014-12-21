@@ -4,6 +4,12 @@ import scala.collection.mutable
 
 class Scope(_atoms: Map[String, Value] = Map.empty) {
 
+  implicit val scope = this
+
+  def eval(xs: List[Expression]): Value = {
+    SpecialForms(xs) orElse BuiltIns(xs) getOrElse Functions(xs)
+  }
+
   object Atoms {
     var atoms = _atoms
     def apply(atom: String): Any = atoms(atom)
@@ -11,15 +17,13 @@ class Scope(_atoms: Map[String, Value] = Map.empty) {
   }
 
   object Functions {
-    private val userDefined = mutable.Map.empty[String, Eval]
+    private val userDefined = mutable.Map.empty[Symbol, Eval]
 
     def bind(name: String, params: List[Expression], body: Expression)(implicit scope: Scope): Value = {
       userDefined += name -> newFn(params, body)
     }
 
-    def apply(fn: String): Eval = {
-      SpecialForms(fn) orElse BuiltIns(fn) getOrElse userDefined(fn)
-    }
+    def apply(xs: List[Expression])(implicit scope: Scope): Value = userDefined(xs.head.toSymbol)(scope)(xs.tail)
 
     def newFn(params: List[Expression], body: Expression)(implicit scope: Scope): Eval = {
       implicit scope => {
