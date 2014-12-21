@@ -4,30 +4,32 @@ object Scope {
   def apply(): Scope = Scope(Map.empty, Map.empty) // TODO move std lib here
 }
 
-case class Scope(values: Map[String, Value], functions: Map[Symbol, Eval]) {
+case class Scope(values: Map[Symbol, Value], functions: Map[Symbol, Eval]) {
 
   var Values = values
   var Functions = functions
 
   def bind(symbol: Symbol, expr: Expression)(implicit scope: Scope) = Values += symbol -> expr.value
 
-  def bindFn(name: String, params: List[Expression], body: Expression)(implicit scope: Scope): Value = {
-    Functions += name -> newFn(params, body)
+  def bindFn(symbol: Symbol, params: List[Expression], body: Expression)(implicit scope: Scope): Value = {
+    Functions += symbol -> newFn(params, body)
   }
 
-  implicit val scope = this
+  def eval(x: Expression): Value = {
 
-  def eval(xs: List[Expression]): Value = {
-    SpecialForms(xs) orElse BuiltIns(xs) getOrElse this(xs)
+    implicit val scope = this
+
+    x match {
+      case symbol: Symbol if Values.contains(symbol) => Values(symbol)
+      case LVector(xs) => xs.map(_.value)
+      case LList(xs) => SpecialForms(xs) orElse BuiltIns(xs) getOrElse this(xs)
+    }
   }
-
-  def apply(symbol: Symbol): Any = values(symbol)
-
 
   def apply(xs: List[Expression])(implicit scope: Scope): Value = {
     xs.head match {
+      case sym: Symbol => Functions(sym)(scope)(xs.tail)
       case fn: Eval => fn(scope)(xs.tail)
-      case LLiteral(sym) => Functions(sym)(scope)(xs.tail)
     }
   }
 
@@ -35,10 +37,10 @@ case class Scope(values: Map[String, Value], functions: Map[Symbol, Eval]) {
     implicit scope => {
       params match {
         case Nil => { case Nil => body.value }
-        case List(LLiteral(atom)) => { case List(a) => body.value(scope.plus(atom -> a.value))}
+        case List(sym: Symbol) => { case List(a) => body.value(scope.plus(sym -> a.value))}
       }
     }
   }
 
-  def plus(tup: (String, Value)*) = Scope(Values ++ Map(tup: _*), Functions)
+  def plus(tup: (Symbol, Value)*) = Scope(Values ++ Map(tup: _*), Functions)
 }

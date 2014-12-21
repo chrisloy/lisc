@@ -3,7 +3,7 @@ package net.chrisloy.lisc
 object BuiltIns {
 
   def apply(xs: List[Expression])(implicit scope: Scope): Option[Value] = xs match {
-    case LLiteral(x) :: args => functions.lift(x, args)
+    case Symbol(name) :: args => functions.lift(name, args)
     case _ => None
   }
 

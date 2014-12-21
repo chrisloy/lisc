@@ -20,7 +20,7 @@ class ParserSpec extends FlatSpec with MustMatchers with Checkers {
   }
 
   it should "parse lists" in {
-    parse("""("a" b (1 2))""") mustBe LList(List(LString("a"), LLiteral("b"), LList(List(LLong(1), LLong(2)))))
+    parse("""("a" b (1 2))""") mustBe LList(List(LString("a"), Symbol("b"), LList(List(LLong(1), LLong(2)))))
   }
 
   it should "handle booleans" in {

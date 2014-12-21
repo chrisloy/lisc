@@ -17,8 +17,8 @@ class Parser(implicit scope: Scope) {
     private def string: Parser[LString] =
       stringLiteral ^^ stripQuotes ^^ LString
 
-    private def literal: Parser[LLiteral] =
-      """[^()\[\] ]+""".r ^^ (x => LLiteral(x))
+    private def symbol: Parser[Symbol] =
+      """[^()\[\] ]+""".r ^^ (x => new Symbol(x))
 
     private def long: Parser[LLong] =
       wholeNumber ^^ (_.toLong) ^^ LLong
@@ -30,7 +30,7 @@ class Parser(implicit scope: Scope) {
       "true"  ^^^ LBoolean(value = true) | "false" ^^^ LBoolean(value = false)
 
     val exp: Parser[Expression] =
-      boolean | double | long | string | list | vector | literal
+      boolean | double | long | string | list | vector | symbol
   }
 
   def apply(input: String): Expression = parser.parseAll(parser.exp, input).get
