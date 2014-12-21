@@ -12,15 +12,11 @@ class ParserSpec extends FlatSpec with MustMatchers with Checkers {
   val parse = new Parser
 
   it should "parse integers" in {
-    check((x: Long) => parse(x.toString) == LLong(x))
+    check((x: Long) => parse(x.toString).value == x)
   }
 
   it should "parse doubles" in {
-    check((x: Double) => parse(x.toString) == LDouble(x))
-  }
-
-  it should "parse lists" in {
-    parse("""("a" b (1 2))""") mustBe LList(List(LString("a"), Symbol("b"), LList(List(LLong(1), LLong(2)))))
+    check((x: Double) => parse(x.toString).value == x)
   }
 
   it should "handle booleans" in {
@@ -34,7 +30,7 @@ class ParserSpec extends FlatSpec with MustMatchers with Checkers {
   }
 
   it should "parse an empty vector" in {
-    parse("[]") mustBe LVector(Nil)
+    parse("[]").value mustBe Nil
   }
 
   it should "parse a vector of numbers" in {

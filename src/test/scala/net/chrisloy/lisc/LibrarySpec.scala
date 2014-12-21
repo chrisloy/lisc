@@ -51,6 +51,13 @@ class LibrarySpec extends FlatSpec with MustMatchers with Checkers {
     parse("(! false)").value mustBe true
   }
 
+  "(<= ...)" should "work properly" in {
+    parse("(<= 3 4)").value mustBe true
+    parse("(<= 3 3)").value mustBe true
+    parse("(<= 3 3.0)").value mustBe true
+    parse("(<= 4 2)").value mustBe false
+  }
+
   "(&& ...)" should "return true only if all arguments are booleans" in {
     parse("(&& true)").value mustBe true
     parse("(&& false)").value mustBe false

@@ -38,4 +38,8 @@ package object lisc {
   case class LVector(members: List[Expression]) extends Expression {
     def value(implicit scope: Scope) = members.map(_.value)
   }
+
+  case class Program(members: List[Expression]) extends Expression {
+    def value(implicit scope: Scope) = members.map(_.value).last
+  }
 }

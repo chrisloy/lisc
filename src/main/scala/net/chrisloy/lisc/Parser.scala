@@ -2,7 +2,7 @@ package net.chrisloy.lisc
 
 import scala.util.parsing.combinator._
 
-class Parser(implicit scope: Scope) {
+class Parser {
 
   private def stripQuotes(x: String) = x.substring(1, x.length - 1)
 
@@ -29,9 +29,11 @@ class Parser(implicit scope: Scope) {
     private def boolean: Parser[LBoolean] =
       "true"  ^^^ LBoolean(value = true) | "false" ^^^ LBoolean(value = false)
 
-    val exp: Parser[Expression] =
+    private def exp: Parser[Expression] =
       boolean | double | long | string | list | vector | symbol
+
+    def program: Parser[Program] = rep(exp) ^^ Program
   }
 
-  def apply(input: String): Expression = parser.parseAll(parser.exp, input).get
+  def apply(input: String): Expression = parser.parseAll(parser.program, input).get
 }

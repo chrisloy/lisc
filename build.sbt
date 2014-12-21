@@ -1,5 +1,9 @@
 scalaVersion := "2.11.4"
 
+organization := "net.chrisloy"
+
+name := "lisc"
+
 libraryDependencies ++= Seq(
   // main
   "org.scalaz"     %% "scalaz-core" % "7.1.0",

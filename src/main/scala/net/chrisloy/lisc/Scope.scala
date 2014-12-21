@@ -1,7 +1,11 @@
 package net.chrisloy.lisc
 
 object Scope {
-  def apply(): Scope = Scope(Map.empty, BuiltIns.all) // TODO move std lib here
+  def apply(): Scope = {
+    val scope = Scope(Map.empty, BuiltIns.all)
+    StandardLibrary.loadInto(scope)(new Parser)
+    scope
+  }
 }
 
 case class Scope(values: Map[Symbol, Value], functions: Map[Symbol, Eval]) {
