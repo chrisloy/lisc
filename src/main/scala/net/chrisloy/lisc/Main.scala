@@ -1,5 +1,7 @@
 package net.chrisloy.lisc
 
+import scala.util.{Failure, Success, Try}
+
 object Main extends App {
 
   implicit val scope = Scope()
@@ -16,12 +18,26 @@ object Main extends App {
 
   print(prompt)
 
+  var commands: List[String] = Nil
+
   for (ln <- io.Source.stdin.getLines().takeWhile(_ != ":q")) {
     if (ln.nonEmpty) {
-      val eval = parse(ln).value
-      println(s"==> $eval")
+      Try(parse(ln).value) match {
+
+        case Failure(ex) =>
+          println(s"Parse error: ${ex.getMessage}")
+          ex.printStackTrace()
+
+        case Success(eval) =>
+          commands ::= ln
+          println(s"==> $eval")
+      }
     }
     print(prompt)
   }
+
+  println("Done. This is what you wrote:")
+
+  commands.reverse foreach println
 }
 
