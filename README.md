@@ -12,7 +12,6 @@ Usage
 Fire up SBT, hit run, and you'll get a basic REPL:
 
 ```clj
-> run
 $ sbt run
 
 ...
