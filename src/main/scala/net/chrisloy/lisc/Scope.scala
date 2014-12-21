@@ -9,9 +9,9 @@ case class Scope(values: Map[Symbol, Value], functions: Map[Symbol, Eval]) {
   var Values = values
   var Functions = functions
 
-  def bind(symbol: Symbol, expr: Expression)(implicit scope: Scope) = Values += symbol -> expr.value
+  def bind(symbol: Symbol, expr: Expression) = Values += symbol -> expr.value(this)
 
-  def bindFn(symbol: Symbol, params: List[Expression], body: Expression)(implicit scope: Scope): Value = {
+  def bindFn(symbol: Symbol, params: List[Expression], body: Expression): Value = {
     Functions += symbol -> newFn(params, body)
   }
 
@@ -21,19 +21,23 @@ case class Scope(values: Map[Symbol, Value], functions: Map[Symbol, Eval]) {
 
     x match {
       case symbol: Symbol if Values.contains(symbol) => Values(symbol)
+      case symbol: Symbol if Functions.contains(symbol) => Functions(symbol)
       case LVector(xs) => xs.map(_.value)
       case LList(xs) => SpecialForms(xs) orElse BuiltIns(xs) getOrElse this(xs)
     }
   }
 
-  def apply(xs: List[Expression])(implicit scope: Scope): Value = {
+  def apply(xs: List[Expression]): Value = {
     xs.head match {
-      case sym: Symbol => Functions(sym)(scope)(xs.tail)
-      case fn: Eval => fn(scope)(xs.tail)
+      case sym: Symbol => Functions(sym)(this)(xs.tail)
+      case other => eval(other) match {
+        case expr: Expression => apply(expr :: xs.tail)
+        case fn: Eval => fn(this)(xs.tail)
+      }
     }
   }
 
-  def newFn(params: List[Expression], body: Expression)(implicit scope: Scope): Eval = {
+  def newFn(params: List[Expression], body: Expression): Eval = {
     implicit scope => {
       params match {
         case Nil => { case Nil => body.value }
