@@ -1,4 +1,4 @@
-package net.chrisloy.lisp
+package net.chrisloy.lisc
 
 object Main extends App {
 
@@ -9,7 +9,7 @@ object Main extends App {
 
   println(
     """
-      |Welcome to LISc! [other names: Chrisp, Loysp]
+      |Welcome to LISc!
       |This is a toy Lisp interpreter, written in Scala.
       |Type :q to leave
     """.stripMargin)

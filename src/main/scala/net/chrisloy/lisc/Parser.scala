@@ -1,4 +1,4 @@
-package net.chrisloy.lisp
+package net.chrisloy.lisc
 
 import scala.util.parsing.combinator._
 

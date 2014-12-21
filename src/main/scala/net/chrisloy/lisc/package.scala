@@ -1,6 +1,6 @@
 package net.chrisloy
 
-package object lisp {
+package object lisc {
 
   type Value = Any
   type Eval = Scope => List[Expression] => Value

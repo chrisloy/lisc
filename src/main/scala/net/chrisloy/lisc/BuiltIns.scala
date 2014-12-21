@@ -1,4 +1,4 @@
-package net.chrisloy.lisp
+package net.chrisloy.lisc
 
 object BuiltIns {
 

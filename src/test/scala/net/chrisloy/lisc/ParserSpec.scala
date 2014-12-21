@@ -1,4 +1,4 @@
-package net.chrisloy.lisp
+package net.chrisloy.lisc
 
 import org.scalatest.prop.Checkers
 import org.scalatest.{MustMatchers, FlatSpec}
