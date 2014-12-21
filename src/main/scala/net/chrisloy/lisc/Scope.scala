@@ -1,7 +1,7 @@
 package net.chrisloy.lisc
 
 object Scope {
-  def apply(): Scope = Scope(Map.empty, Map.empty) // TODO move std lib here
+  def apply(): Scope = Scope(Map.empty, BuiltIns.all) // TODO move std lib here
 }
 
 case class Scope(values: Map[Symbol, Value], functions: Map[Symbol, Eval]) {
@@ -23,7 +23,7 @@ case class Scope(values: Map[Symbol, Value], functions: Map[Symbol, Eval]) {
       case symbol: Symbol if Values.contains(symbol) => Values(symbol)
       case symbol: Symbol if Functions.contains(symbol) => Functions(symbol)
       case LVector(xs) => xs.map(_.value)
-      case LList(xs) => SpecialForms(xs) orElse BuiltIns(xs) getOrElse this(xs)
+      case LList(xs) => SpecialForms(xs) getOrElse this(xs)
     }
   }
 
