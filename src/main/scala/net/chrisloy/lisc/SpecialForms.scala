@@ -9,8 +9,8 @@ object SpecialForms {
 
   private def forms(implicit scope: Scope): PartialFunction[(String, List[Expression]), Value] = {
     case ("if", List(test, then, other)) => if (test.toBoolean) then.value else other.value
-    case ("def", List(LLiteral(name), expr)) => scope.Atoms.bind(name, expr)
-    case ("fn", List(LVector(args), expr)) => scope.Functions.newFn(args, expr)
-    case ("defn", List(LLiteral(name), LVector(args), expr)) => scope.Functions.bind(name, args, expr)
+    case ("def", List(LLiteral(name), expr)) => scope.bind(name, expr)
+    case ("fn", List(LVector(args), expr)) => scope.newFn(args, expr)
+    case ("defn", List(LLiteral(name), LVector(args), expr)) => scope.bindFn(name, args, expr)
   }
 }

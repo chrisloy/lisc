@@ -5,7 +5,7 @@ import org.scalatest.{MustMatchers, FlatSpec}
 
 class LibrarySpec extends FlatSpec with MustMatchers with Checkers {
 
-  implicit val scope = new Scope
+  implicit val scope = Scope()
 
   val parse = new Parser
 

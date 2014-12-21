@@ -2,7 +2,7 @@ package net.chrisloy.lisc
 
 object Main extends App {
 
-  implicit val scope = new Scope
+  implicit val scope = Scope()
 
   val parse = new Parser
   val prompt = "lisc> "

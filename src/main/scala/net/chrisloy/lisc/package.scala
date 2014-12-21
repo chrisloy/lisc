@@ -8,6 +8,7 @@ package object lisc {
 
   sealed trait Expression {
     def value(implicit scope: Scope): Any
+    def isSymbol(implicit scope: Scope) = value.isInstanceOf[Symbol]
     def toSymbol(implicit scope: Scope) = value.asInstanceOf[Symbol]
     def toBoolean(implicit scope: Scope) = value.asInstanceOf[Boolean]
     def isLong(implicit scope: Scope) = value.isInstanceOf[Long]
@@ -26,7 +27,7 @@ package object lisc {
   case class LBoolean(value: Boolean) extends WithValue(value)
 
   case class LLiteral(atom: String) extends Expression {
-    def value(implicit scope: Scope) = scope.Atoms(atom)
+    def value(implicit scope: Scope) = scope.Values(atom)
   }
 
   case class LList(members: List[Expression]) extends Expression {
