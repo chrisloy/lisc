@@ -57,4 +57,16 @@ class ParserSpec extends FlatSpec with MustMatchers with Checkers {
   it should "create a one-arity function" in {
     parse("(fn [a] (+ 1 a))").value.asInstanceOf[Eval](scope)(LLong(3) :: Nil) mustBe 4
   }
+
+  it should "allow functions bound as values" in {
+    parse("(def x (fn [] (+ 1 2)))").value
+    parse("(x)").value mustBe 3
+    parse("(def add2 (fn [x] (+ x 2)))").value
+    parse("(add2 4)").value mustBe 6
+  }
+
+  it should "return the value of the last expression in a program" in {
+    parse("1 2 3 4").value mustBe 4
+    parse("(def x (fn [] (+ 1 2))) (x)").value mustBe 3
+  }
 }
