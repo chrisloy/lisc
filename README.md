@@ -22,7 +22,7 @@ Type :q to leave
     
 lisc> (def x 4)
 ==> ()
-lisc> (defn addX [y] (+ x y)
+lisc> (defn addX [y] (+ x y))
 ==> ()
 lisc> (addX 6)
 ==> 10
