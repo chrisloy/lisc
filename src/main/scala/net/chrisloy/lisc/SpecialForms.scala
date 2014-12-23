@@ -2,12 +2,12 @@ package net.chrisloy.lisc
 
 object SpecialForms {
 
-  def apply(xs: List[Expression])(implicit scope: Scope): Option[Value] = xs match {
-    case Symbol(x) :: args => forms.lift(x, args)
+  def apply(xs: List[Any])(scope: Scope): Option[Value] = xs match {
+    case Symbol(x) :: args => forms(scope).lift(x, args)
     case _ => None
   }
 
-  private def forms(implicit scope: Scope): PartialFunction[(String, List[Expression]), Value] = {
+  private def forms(scope: Scope): PartialFunction[(String, List[Any]), Value] = {
 
     import scope._
 

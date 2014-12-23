@@ -14,22 +14,22 @@ class Parser {
     private def vector: Parser[LVector] =
       "[" ~> rep(exp) <~ "]" ^^ (x => LVector(x))
 
-    private def string: Parser[LString] =
-      stringLiteral ^^ stripQuotes ^^ LString
+    private def string: Parser[String] =
+      stringLiteral ^^ stripQuotes
 
     private def symbol: Parser[Symbol] =
       """[^()\[\] ]+""".r ^^ (x => new Symbol(x))
 
-    private def long: Parser[LLong] =
-      wholeNumber ^^ (_.toLong) ^^ LLong
+    private def long: Parser[Long] =
+      wholeNumber ^^ (_.toLong)
 
-    private def double: Parser[LDouble] =
-      ("""\-?\d+\.\d*([eE]\-?\d+)?""".r | """\-?\d+[eE]\-?\d+""".r) ^^ (_.toDouble) ^^ LDouble
+    private def double: Parser[Double] =
+      ("""\-?\d+\.\d*([eE]\-?\d+)?""".r | """\-?\d+[eE]\-?\d+""".r) ^^ (_.toDouble)
 
-    private def boolean: Parser[LBoolean] =
-      "true"  ^^^ LBoolean(value = true) | "false" ^^^ LBoolean(value = false)
+    private def boolean: Parser[Boolean] =
+      "true"  ^^^ true | "false" ^^^ false
 
-    private def exp: Parser[Expression] =
+    private def exp: Parser[Any] =
       boolean | double | long | string | list | vector | symbol
 
     def program: Parser[Program] = rep(exp) ^^ Program

@@ -12,41 +12,33 @@ case class Scope(values: Map[Symbol, Value]) {
 
   private var Values = values
 
-  def bind(symbol: Symbol, expr: Expression) = Values += symbol -> eval(expr)
+  def bind(symbol: Symbol, expr: Any) = Values += symbol -> eval(expr)
 
-  def bindFn(symbol: Symbol, params: List[Symbol], body: Expression): Value = {
+  def bindFn(symbol: Symbol, params: List[Symbol], body: Any): Value = {
     Values += symbol -> newFn(params, body)
   }
 
-  def eval(x: Expression): Value = {
-
-    implicit val scope = this
-
-    x match {
-      case symbol: Symbol if Values.contains(symbol) => Values(symbol)
-      case LString(value) => value
-      case LLong(value) => value
-      case LDouble(value) => value
-      case LBoolean(value) => value
-      case LVector(xs) => xs map eval
-      case LList(xs) => SpecialForms(xs) getOrElse this(xs)
-      case Program(xs) => (xs map eval).head
-    }
+  def eval(x: Any): Value = x match {
+    case symbol: Symbol if Values.contains(symbol) => Values(symbol)
+    case value @ (_: String | _: Long | _: Double | _: Boolean) => value
+    case LVector(xs) => xs map eval
+    case LList(xs) => SpecialForms(xs)(this) getOrElse this(xs)
+    case Program(xs) => (xs map eval).head
   }
 
   // TODO better names? not here? as[T] ?
-  def isSymbol(x: Expression) = x.isInstanceOf[Symbol]
-  def toSymbol(x: Expression) = x.asInstanceOf[Symbol]
-  def toBoolean(x: Expression) = eval(x).asInstanceOf[Boolean]
-  def isLong(x: Expression) = eval(x).isInstanceOf[Long]
-  def toLong(x: Expression) = eval(x).asInstanceOf[Long]
-  def isDouble(x: Expression) = eval(x).isInstanceOf[Double]
-  def toDouble(x: Expression) = {
+  def isSymbol(x: Any) = x.isInstanceOf[Symbol]
+  def toSymbol(x: Any) = x.asInstanceOf[Symbol]
+  def toBoolean(x: Any) = eval(x).asInstanceOf[Boolean]
+  def isLong(x: Any) = eval(x).isInstanceOf[Long]
+  def toLong(x: Any) = eval(x).asInstanceOf[Long]
+  def isDouble(x: Any) = eval(x).isInstanceOf[Double]
+  def toDouble(x: Any) = {
     if (isDouble(x)) eval(x).asInstanceOf[Double] else toLong(x).toDouble
   }
 
 
-  def apply(xs: List[Expression]): Value = {
+  def apply(xs: List[Any]): Value = {
     xs.head match {
       case sym: Symbol => Values(sym) match {
         case fn: Eval => fn(this)(xs.tail)
@@ -58,7 +50,7 @@ case class Scope(values: Map[Symbol, Value]) {
     }
   }
 
-  def newFn(params: List[Symbol], body: Expression): Eval = {
+  def newFn(params: List[Symbol], body: Any): Eval = {
     implicit scope => { args =>
       scope.plus(params.zip(args.map(scope.eval)): _*).eval(body)
     }

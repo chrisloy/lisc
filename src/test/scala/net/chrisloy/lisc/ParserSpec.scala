@@ -56,7 +56,7 @@ class ParserSpec extends FlatSpec with MustMatchers with Checkers {
   }
 
   it should "create a one-arity function" in {
-    eval(parse("(fn [a] (+ 1 a))")).asInstanceOf[Eval](scope)(LLong(3) :: Nil) mustBe 4
+    eval(parse("(fn [a] (+ 1 a))")).asInstanceOf[Eval](scope)(3L :: Nil) mustBe 4
   }
 
   it should "allow functions bound as values" in {

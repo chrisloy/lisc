@@ -2,7 +2,7 @@ package net.chrisloy.lisc
 
 object BuiltIns {
 
-  private type Args = List[Expression]
+  private type Args = List[Any]
 
   val all: Map[Symbol, Eval] = Map(
     Symbol("=")  -> { implicit scope => _eq _ },
