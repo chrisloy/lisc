@@ -1,6 +1,8 @@
-LISc [![Build Status](https://travis-ci.org/chrisloy/lisc.png?branch=master)](https://travis-ci.org/chrisloy/lisc)
+LISc
 ====
 _List Interpretation in Scala_
+
+[![Build Status](https://travis-ci.org/chrisloy/lisc.png?branch=master)](https://travis-ci.org/chrisloy/lisc)
 
 Overview
 ---
