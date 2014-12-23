@@ -6,62 +6,63 @@ import org.scalatest.{MustMatchers, FlatSpec}
 class LibrarySpec extends FlatSpec with MustMatchers with Checkers {
 
   implicit val scope = Scope()
+  import scope.eval
 
   val parse = new Parser
 
   "(+ ...)" should "add two integers" in {
-    check((x: Long, y: Long) => parse(s"(+ $x $y)").value == x + y)
+    check((x: Long, y: Long) => eval(parse(s"(+ $x $y)")) == x + y)
   }
 
   it should "add three integers" in {
-    check((x: Long, y: Long, z: Long) => parse(s"(+ $x $y $z)").value == x + y + z)
+    check((x: Long, y: Long, z: Long) => eval(parse(s"(+ $x $y $z)")) == x + y + z)
   }
 
   it should "add with arbitrary nesting" in {
-    check((x: Long, y: Long, z: Long) => parse(s"(+ $x (+ $y (+ $z)))").value == x + y + z)
+    check((x: Long, y: Long, z: Long) => eval(parse(s"(+ $x (+ $y (+ $z)))")) == x + y + z)
   }
 
   "(= ...)" should "handle numbers" in {
-    check((x: Long) => parse(s"(= $x $x)").value == true)
-    check((x: Long, y: Long) => parse(s"(= $x $y)").value == (x == y))
+    check((x: Long) => eval(parse(s"(= $x $x)")) == true)
+    check((x: Long, y: Long) => eval(parse(s"(= $x $y)")) == (x == y))
   }
 
   it should "handle strings" in {
-    parse(s"""(= "" "")""").value mustBe true
-    parse(s"""(= "pies" "pies")""").value mustBe true
-    parse(s"""(= "pies" "cakes")""").value mustBe false
+    eval(parse(s"""(= "" "")""")) mustBe true
+    eval(parse(s"""(= "pies" "pies")""")) mustBe true
+    eval(parse(s"""(= "pies" "cakes")""")) mustBe false
   }
 
   "(< ...)" should "compare correctly" in {
-    check((x: Long, y: Long) => parse(s"(< $x $y)").value == (x < y))
-    check((x: Long, y: Double) => parse(s"(< $x $y)").value == (x < y))
-    check((x: Double, y: Long) => parse(s"(< $x $y)").value == (x < y))
-    check((x: Double, y: Double) => parse(s"(< $x $y)").value == (x < y))
+    check((x: Long, y: Long) => eval(parse(s"(< $x $y)")) == (x < y))
+    check((x: Long, y: Double) => eval(parse(s"(< $x $y)")) == (x < y))
+    check((x: Double, y: Long) => eval(parse(s"(< $x $y)")) == (x < y))
+    check((x: Double, y: Double) => eval(parse(s"(< $x $y)")) == (x < y))
   }
 
   "(- ...)" should "subtract correctly" in {
-    check((x: Long, y: Long) => parse(s"(- $x $y)").value == (x - y))
-    check((x: Long, y: Double) => parse(s"(- $x $y)").value == (x - y))
-    check((x: Double, y: Long) => parse(s"(- $x $y)").value == (x - y))
-    check((x: Double, y: Double) => parse(s"(- $x $y)").value == (x - y))
+    check((x: Long, y: Long) => eval(parse(s"(- $x $y)")) == (x - y))
+    check((x: Long, y: Double) => eval(parse(s"(- $x $y)")) == (x - y))
+    check((x: Double, y: Long) => eval(parse(s"(- $x $y)")) == (x - y))
+    check((x: Double, y: Double) => eval(parse(s"(- $x $y)")) == (x - y))
   }
 
   "(! ...)" should "invert booleans" in {
-    parse("(! true)").value mustBe false
-    parse("(! false)").value mustBe true
+    eval(parse("(! true)")) mustBe false
+    eval(parse("(! false)")) mustBe true
   }
 
   "(<= ...)" should "work properly" in {
-    parse("(<= 3 4)").value mustBe true
-    parse("(<= 3 3)").value mustBe true
-    parse("(<= 3 3.0)").value mustBe true
-    parse("(<= 4 2)").value mustBe false
+    eval(parse("(<= 3 4)")) mustBe true
+    eval(parse("(<= 3 3)")) mustBe true
+    eval(parse("(<= 3 3.0)")) mustBe true
+    eval(parse("(<= 4 2)")) mustBe false
   }
 
   "(&& ...)" should "return true only if all arguments are booleans" in {
-    parse("(&& true)").value mustBe true
-    parse("(&& false)").value mustBe false
-    parse("(&& true true true true)").value mustBe true
-    parse("(&& true true false true)").value mustBe false
+    eval(parse("(&& true)")) mustBe true
+    eval(parse("(&& false)")) mustBe false
+    eval(parse("(&& true true true true)")) mustBe true
+    eval(parse("(&& true true false true)")) mustBe false
   }
 }

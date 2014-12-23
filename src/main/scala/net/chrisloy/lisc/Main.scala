@@ -22,7 +22,7 @@ object Main extends App {
 
   for (ln <- io.Source.stdin.getLines().takeWhile(_ != ":q")) {
     if (ln.nonEmpty) {
-      Try(parse(ln).value) match {
+      Try(scope.eval(parse(ln))) match {
 
         case Failure(ex) =>
           println(s"Parse error: ${ex.getMessage}")

@@ -12,7 +12,7 @@ case class Scope(values: Map[Symbol, Value]) {
 
   private var Values = values
 
-  def bind(symbol: Symbol, expr: Expression) = Values += symbol -> expr.value(this)
+  def bind(symbol: Symbol, expr: Expression) = Values += symbol -> eval(expr)
 
   def bindFn(symbol: Symbol, params: List[Symbol], body: Expression): Value = {
     Values += symbol -> newFn(params, body)
@@ -24,15 +24,27 @@ case class Scope(values: Map[Symbol, Value]) {
 
     x match {
       case symbol: Symbol if Values.contains(symbol) => Values(symbol)
-      case LVector(xs) => xs.map(_.value)
-      case LList(xs) => SpecialForms(xs) getOrElse this(xs)
-      case Program(xs) => xs.map(_.value).head
       case LString(value) => value
       case LLong(value) => value
       case LDouble(value) => value
       case LBoolean(value) => value
+      case LVector(xs) => xs map eval
+      case LList(xs) => SpecialForms(xs) getOrElse this(xs)
+      case Program(xs) => (xs map eval).head
     }
   }
+
+  // TODO better names? not here? as[T] ?
+  def isSymbol(x: Expression) = x.isInstanceOf[Symbol]
+  def toSymbol(x: Expression) = x.asInstanceOf[Symbol]
+  def toBoolean(x: Expression) = eval(x).asInstanceOf[Boolean]
+  def isLong(x: Expression) = eval(x).isInstanceOf[Long]
+  def toLong(x: Expression) = eval(x).asInstanceOf[Long]
+  def isDouble(x: Expression) = eval(x).isInstanceOf[Double]
+  def toDouble(x: Expression) = {
+    if (isDouble(x)) eval(x).asInstanceOf[Double] else toLong(x).toDouble
+  }
+
 
   def apply(xs: List[Expression]): Value = {
     xs.head match {
@@ -48,7 +60,7 @@ case class Scope(values: Map[Symbol, Value]) {
 
   def newFn(params: List[Symbol], body: Expression): Eval = {
     implicit scope => { args =>
-      body.value(scope.plus(params.zip(args.map(_.value)): _*))
+      scope.plus(params.zip(args.map(scope.eval)): _*).eval(body)
     }
   }
 

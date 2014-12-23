@@ -7,18 +7,7 @@ package object lisc {
   type Value = Any
   type Eval = Scope => List[Expression] => Value
 
-  sealed trait Expression {
-    final def value(implicit scope: Scope): Any = scope.eval(this)
-    def isSymbol(implicit scope: Scope) = this.isInstanceOf[Symbol]
-    def toSymbol(implicit scope: Scope) = this.asInstanceOf[Symbol]
-    def toBoolean(implicit scope: Scope) = value.asInstanceOf[Boolean]
-    def isLong(implicit scope: Scope) = value.isInstanceOf[Long]
-    def toLong(implicit scope: Scope) = value.asInstanceOf[Long]
-    def isDouble(implicit scope: Scope) = value.isInstanceOf[Double]
-    def toDouble(implicit scope: Scope) = {
-      if (isDouble) value.asInstanceOf[Double] else toLong.toDouble
-    }
-  }
+  sealed trait Expression
 
   case class LString(value: String) extends Expression
   case class LLong(value: Long) extends Expression

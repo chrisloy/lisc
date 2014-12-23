@@ -8,64 +8,65 @@ import org.scalacheck.Prop._
 class ParserSpec extends FlatSpec with MustMatchers with Checkers {
 
   implicit val scope = Scope()
+  import scope.eval
 
   val parse = new Parser
 
   it should "parse integers" in {
-    check((x: Long) => parse(x.toString).value == x)
+    check((x: Long) => eval(parse(x.toString)) == x)
   }
 
   it should "parse doubles" in {
-    check((x: Double) => parse(x.toString).value == x)
+    check((x: Double) => eval(parse(x.toString)) == x)
   }
 
   it should "handle booleans" in {
-    parse("true").value mustBe true
-    parse("false").value mustBe false
+    eval(parse("true")) mustBe true
+    eval(parse("false")) mustBe false
   }
 
   it should "handle conditionals" in {
-    parse("(if true 1 2)").value mustBe 1
-    parse("(if false 1 2)").value mustBe 2
+    eval(parse("(if true 1 2)")) mustBe 1
+    eval(parse("(if false 1 2)")) mustBe 2
   }
 
   it should "parse an empty vector" in {
-    parse("[]").value mustBe Nil
+    eval(parse("[]")) mustBe Nil
   }
 
   it should "parse a vector of numbers" in {
-    parse("[1 2 3]").value mustBe List(1, 2, 3)
+    eval(parse("[1 2 3]")) mustBe List(1, 2, 3)
   }
 
   it should "handle functions returning symbols" in {
-    parse("((if true + fn) 1 2)").value mustBe 3
+    eval(parse("((if true + fn) 1 2)")) mustBe 3
   }
 
   it should "create a zero-arity function" in {
-    parse("(fn [] (+ 1 2))").value.asInstanceOf[Eval](scope)(Nil) mustBe 3
+    eval(parse("(fn [] (+ 1 2))")).asInstanceOf[Eval](scope)(Nil) mustBe 3
   }
 
   it should "execute a zero-arity function" in {
-    parse("((fn [] (+ 1 2)))").value mustBe 3
+    eval(parse("((fn [] (+ 1 2)))")) mustBe 3
   }
 
   it should "register a zero-arity function" in {
-    parse("(defn a [] (+ 1 2))").value
-    parse("(a)").value mustBe 3
+    eval(parse("(defn a [] (+ 1 2))"))
+    eval(parse("(a)")) mustBe 3
   }
 
   it should "create a one-arity function" in {
-    parse("(fn [a] (+ 1 a))").value.asInstanceOf[Eval](scope)(LLong(3) :: Nil) mustBe 4
+    eval(parse("(fn [a] (+ 1 a))")).asInstanceOf[Eval](scope)(LLong(3) :: Nil) mustBe 4
   }
 
   it should "allow functions bound as values" in {
-    parse("(def x (fn [] (+ 1 2)))").value
-    parse("(x)").value mustBe 3
-    parse("(def add2 (fn [x] (+ x 2)))").value
-    parse("(add2 4)").value mustBe 6
+    eval(parse("(def x (fn [] (+ 1 2)))"))
+    eval(parse("(x)")) mustBe 3
+    eval(parse("(def add2 (fn [x] (+ x 2)))"))
+    eval(parse("(add2 4)")) mustBe 6
   }
 
   it should "return the value of the first expression in a program" in {
-    parse("1 2 3 4").value mustBe 1
+    eval(parse("1 2 3 4")) mustBe 1
   }
 }
