@@ -22,12 +22,20 @@ Welcome to LISc!
 This is a toy Lisp interpreter, written in Scala.
 Type :q to leave
     
-lisc> (def x 4)
+lisc> (defn fact [x] (if (<= x 1) 1 (* x (fact (- x 1)))))
 ==> ()
-lisc> (defn addX [y] (+ x y))
-==> ()
-lisc> (addX 6)
-==> 10
+lisc> (fact 5)
+==> 120
 ```
 
 Type ```:q``` to exit the REPL.
+
+Special Forms
+---
+Currently four, with naming inspiration nabbed from Clojure:
+
+* ```(if test then else)``` - as you might expect
+* ```(def name value)``` - binds a value to the result of the expression
+* ```(fn [args] body)``` - defines a lambda function
+* ```(defn name [args] body)``` - helper for binding a function (to be replaced by a macro once they're implemented)
+
