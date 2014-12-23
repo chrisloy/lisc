@@ -2,15 +2,13 @@ package net.chrisloy
 
 package object lisc {
 
-  case class Symbol(name: String) extends Expression {
-    def value(implicit scope: Scope) = scope.eval(this)
-  }
+  case class Symbol(name: String) extends Expression
 
   type Value = Any
   type Eval = Scope => List[Expression] => Value
 
   sealed trait Expression {
-    def value(implicit scope: Scope): Any
+    final def value(implicit scope: Scope): Any = scope.eval(this)
     def isSymbol(implicit scope: Scope) = this.isInstanceOf[Symbol]
     def toSymbol(implicit scope: Scope) = this.asInstanceOf[Symbol]
     def toBoolean(implicit scope: Scope) = value.asInstanceOf[Boolean]
@@ -22,24 +20,12 @@ package object lisc {
     }
   }
 
-  abstract class WithValue[T](v: T) extends Expression {
-    def value(implicit scope: Scope): T = v
-  }
+  case class LString(value: String) extends Expression
+  case class LLong(value: Long) extends Expression
+  case class LDouble(value: Double) extends Expression
+  case class LBoolean(value: Boolean) extends Expression
 
-  case class LString(value: String) extends WithValue(value)
-  case class LLong(value: Long) extends WithValue(value)
-  case class LDouble(value: Double) extends WithValue(value)
-  case class LBoolean(value: Boolean) extends WithValue(value)
-
-  case class LList(members: List[Expression]) extends Expression {
-    def value(implicit scope: Scope) = scope.eval(this)
-  }
-
-  case class LVector(members: List[Expression]) extends Expression {
-    def value(implicit scope: Scope) = members.map(_.value)
-  }
-
-  case class Program(members: List[Expression]) extends Expression {
-    def value(implicit scope: Scope) = members.map(_.value).last
-  }
+  case class LList(members: List[Expression]) extends Expression
+  case class LVector(members: List[Expression]) extends Expression
+  case class Program(members: List[Expression]) extends Expression
 }

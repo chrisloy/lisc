@@ -26,6 +26,11 @@ case class Scope(values: Map[Symbol, Value]) {
       case symbol: Symbol if Values.contains(symbol) => Values(symbol)
       case LVector(xs) => xs.map(_.value)
       case LList(xs) => SpecialForms(xs) getOrElse this(xs)
+      case Program(xs) => xs.map(_.value).head
+      case LString(value) => value
+      case LLong(value) => value
+      case LDouble(value) => value
+      case LBoolean(value) => value
     }
   }
 

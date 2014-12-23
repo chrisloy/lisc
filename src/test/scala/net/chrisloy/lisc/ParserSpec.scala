@@ -65,8 +65,7 @@ class ParserSpec extends FlatSpec with MustMatchers with Checkers {
     parse("(add2 4)").value mustBe 6
   }
 
-  it should "return the value of the last expression in a program" in {
-    parse("1 2 3 4").value mustBe 4
-    parse("(def x (fn [] (+ 1 2))) (x)").value mustBe 3
+  it should "return the value of the first expression in a program" in {
+    parse("1 2 3 4").value mustBe 1
   }
 }
